@@ -8,16 +8,17 @@ contract EtherStore {
         balances[msg.sender] += msg.value;
     }
 
+    /// @dev follows CHECKS, EFFECTS, INTERACTIONS
     function withdraw() public {
         uint256 bal = balances[msg.sender];
         require(bal > 0);
 
+        balances[msg.sender] = 0;
+
         (bool sent,) = msg.sender.call{value: bal}("");
         require(sent, "Failed to send Ether");
 
-        balances[msg.sender] = 0;
-
-        // fix for this re-entrancy is explained in No-Reentrancy.sol
+        // by following CEI pattern, ReEntrancy is avoided
     }
 
     // Helper function to check the balance of this contract
